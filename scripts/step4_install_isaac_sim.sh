@@ -75,7 +75,6 @@ OMNI_KIT_DISABLE_TELEMETRY=1 \
 python - <<'EOF'
 import isaacsim
 print("✓ Isaac Sim imported successfully")
-print("Isaac Sim version:", isaacsim.__version__)
 EOF
 
 echo
