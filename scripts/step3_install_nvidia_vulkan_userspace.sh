@@ -69,7 +69,7 @@ if [ "$NEED_REBOOT" -eq 1 ]; then
     echo "IMPORTANT: You MUST reboot now."
     echo
     echo "After reboot, re-run this script:"
-    echo "  ./step3_install_nvidia_vulkan_userspace.sh"
+    echo "  bash step3_install_nvidia_vulkan_userspace.sh"
     echo "=================================================="
     exit 0
 fi

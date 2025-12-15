@@ -92,7 +92,7 @@ Clone the repository to any location you prefer (for example, your home director
 ```bash
 cd ~
 git clone https://github.com/xiransong/ubuntu24-isaac-lab-setup
-cd ubuntu24-isaac-lab-setup
+cd ubuntu24-isaac-lab-setup/scripts
 ```
 
 > 💡 The installation scripts do not depend on the repository location.

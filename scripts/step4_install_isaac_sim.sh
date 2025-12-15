@@ -70,7 +70,8 @@ echo "=================================================="
 echo "[Verification]"
 echo "=================================================="
 
-echo "[Check] Isaac Sim Python package:"
+OMNI_KIT_ACCEPT_EULA=YES \
+OMNI_KIT_DISABLE_TELEMETRY=1 \
 python - <<'EOF'
 import isaacsim
 print("✓ Isaac Sim imported successfully")
