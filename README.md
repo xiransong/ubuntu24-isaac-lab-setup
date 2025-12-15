@@ -1,4 +1,4 @@
-# Isaac Sim + Isaac Lab Reproducible Setup (Lambda Cloud)
+# Isaac Sim + Isaac Lab Reproducible Setup (Lambda Cloud - Ubuntu 24.04.2 LTS)
 
 This repository provides a **fully reproducible, step-by-step setup** for installing **NVIDIA Isaac Sim 5.1** and **Isaac Lab** on a **Lambda Cloud GPU virtual machine**, using **Ubuntu 24.04.2** and **Python 3.11**.
 
@@ -91,8 +91,8 @@ Clone the repository to any location you prefer (for example, your home director
 
 ```bash
 cd ~
-git clone <REPO_URL>
-cd <REPO_NAME>
+git clone https://github.com/xiransong/ubuntu24-isaac-lab-setup
+cd ubuntu24-isaac-lab-setup
 ```
 
 > 💡 The installation scripts do not depend on the repository location.
@@ -101,7 +101,7 @@ cd <REPO_NAME>
 ### Step 1 — Install Python 3.11
 
 ```bash
-./step1_install_python311.sh
+bash step1_install_python311.sh
 ```
 
 This step:
@@ -123,7 +123,7 @@ You should see Python **3.11.x**.
 ### Step 2 — Install Vulkan & Graphics Prerequisites
 
 ```bash
-./step2_install_graphics_vulkan_prereqs.sh
+bash step2_install_graphics_vulkan_prereqs.sh
 ```
 
 This step installs:
@@ -147,7 +147,7 @@ ldconfig -p | grep libGLX
 ### Step 3 — Install NVIDIA Driver + Vulkan Userspace
 
 ```bash
-./step3_install_nvidia_vulkan_userspace.sh
+bash step3_install_nvidia_vulkan_userspace.sh
 ```
 
 This step:
@@ -174,7 +174,7 @@ You should see your NVIDIA GPU listed in both outputs.
 ### Step 4 — Install NVIDIA Isaac Sim
 
 ```bash
-./step4_install_isaac_sim.sh
+bash step4_install_isaac_sim.sh
 ```
 
 This step:
@@ -210,7 +210,7 @@ You can safely terminate with `Ctrl+C`.
 ### Step 5 — Install Isaac Lab and Verify RL Training
 
 ```bash
-./step5_install_isaac_lab.sh
+bash step5_install_isaac_lab.sh
 ```
 
 This step:
