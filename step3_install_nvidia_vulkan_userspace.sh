@@ -2,48 +2,74 @@
 set -e
 
 echo "=================================================="
-echo "Step 3: Install NVIDIA driver + Vulkan userspace"
+echo "Step 3: NVIDIA driver + Vulkan userspace (Isaac Sim)"
 echo "=================================================="
 
+REQUIRED_DRIVER_MAJOR=570
+
 # --------------------------------------------------
-# 0. Check that we are on a GPU VM
+# 0. Ensure we are on a GPU VM
 # --------------------------------------------------
-echo "[Check] PCI devices (expect NVIDIA GPU):"
-lspci | grep -i nvidia || {
-    echo "ERROR: No NVIDIA GPU detected. Are you on a GPU VM?"
+echo "[Check] Detecting NVIDIA GPU..."
+if ! lspci | grep -i nvidia >/dev/null; then
+    echo "ERROR: No NVIDIA GPU detected."
+    echo "Are you running on a GPU VM?"
     exit 1
-}
+fi
+echo "✓ NVIDIA GPU detected"
 echo
 
 # --------------------------------------------------
-# 1. Check if NVIDIA driver is already installed
+# 1. Check existing NVIDIA driver
 # --------------------------------------------------
-if command -v nvidia-smi >/dev/null 2>&1; then
-    echo "[Info] NVIDIA driver already installed."
-    nvidia-smi
-else
-    echo "[Step] NVIDIA driver not found. Installing driver..."
+NEED_REBOOT=0
+DRIVER_MAJOR_INSTALLED=0
 
-    # ----------------------------------------------
-    # 1a. Enable graphics drivers PPA (Ubuntu standard)
-    # ----------------------------------------------
+if command -v nvidia-smi >/dev/null 2>&1; then
+    DRIVER_VERSION=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n 1)
+    DRIVER_MAJOR_INSTALLED=${DRIVER_VERSION%%.*}
+
+    echo "[Info] Detected NVIDIA driver: ${DRIVER_VERSION}"
+
+    if [ "$DRIVER_MAJOR_INSTALLED" -lt "$REQUIRED_DRIVER_MAJOR" ]; then
+        echo "[Info] Driver too old for Isaac Sim (need >= ${REQUIRED_DRIVER_MAJOR})"
+        NEED_REBOOT=1
+    else
+        echo "✓ Driver version is sufficient"
+    fi
+else
+    echo "[Info] NVIDIA driver not installed"
+    NEED_REBOOT=1
+fi
+echo
+
+# --------------------------------------------------
+# 2. Install / upgrade NVIDIA driver if needed
+# --------------------------------------------------
+if [ "$NEED_REBOOT" -eq 1 ]; then
+    echo "[Step] Installing NVIDIA driver ${REQUIRED_DRIVER_MAJOR}..."
+
+    echo "[Step] Removing old NVIDIA drivers (if any)..."
+    sudo apt remove --purge -y '^nvidia-.*' || true
+    sudo apt autoremove -y
+    sudo apt autoclean
+
+    echo "[Step] Enabling graphics-drivers PPA..."
     sudo apt update
     sudo apt install -y software-properties-common
     sudo add-apt-repository -y ppa:graphics-drivers/ppa
     sudo apt update
 
-    # ----------------------------------------------
-    # 1b. Install recommended NVIDIA driver
-    # (Lambda GPUs like A6000 work well with 535+)
-    # ----------------------------------------------
-    echo "[Step] Installing NVIDIA driver (recommended)..."
-    sudo apt install -y nvidia-driver-535
+    echo "[Step] Installing NVIDIA driver ${REQUIRED_DRIVER_MAJOR}..."
+    sudo apt install -y nvidia-driver-${REQUIRED_DRIVER_MAJOR}
 
     echo
     echo "=================================================="
-    echo "IMPORTANT:"
-    echo "A reboot is REQUIRED after installing the NVIDIA driver."
-    echo "Please reboot now, then re-run this script."
+    echo "NVIDIA driver installed."
+    echo "IMPORTANT: You MUST reboot now."
+    echo
+    echo "After reboot, re-run this script:"
+    echo "  ./step3_install_nvidia_vulkan_userspace.sh"
     echo "=================================================="
     exit 0
 fi
@@ -51,39 +77,35 @@ fi
 echo
 
 # --------------------------------------------------
-# 2. Detect NVIDIA driver major version
-# --------------------------------------------------
-DRIVER_VERSION=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n 1)
-DRIVER_MAJOR=${DRIVER_VERSION%%.*}
-
-echo "[Info] Detected NVIDIA driver version: $DRIVER_VERSION"
-echo "[Info] Using driver major version: $DRIVER_MAJOR"
-echo
-
-# --------------------------------------------------
-# 3. Install NVIDIA userspace libraries (OpenGL + utils)
+# 3. Install NVIDIA userspace libraries
 # --------------------------------------------------
 echo "[Step] Installing NVIDIA userspace libraries..."
+
+sudo apt update
 sudo apt install -y \
-    libnvidia-gl-${DRIVER_MAJOR} \
-    libnvidia-common-${DRIVER_MAJOR} \
-    nvidia-utils-${DRIVER_MAJOR}
+    libnvidia-gl-${DRIVER_MAJOR_INSTALLED} \
+    libnvidia-common-${DRIVER_MAJOR_INSTALLED} \
+    nvidia-utils-${DRIVER_MAJOR_INSTALLED}
+
+echo "✓ NVIDIA userspace libraries installed"
+echo
 
 # --------------------------------------------------
-# 4. Verify NVIDIA GLX library exists
+# 4. Verify NVIDIA GLX library
 # --------------------------------------------------
-echo
-echo "[Check] Verifying libGLX_nvidia..."
-ldconfig -p | grep libGLX_nvidia || {
-    echo "ERROR: libGLX_nvidia.so not found."
+echo "[Check] Verifying NVIDIA GLX library..."
+if ! ldconfig -p | grep -q libGLX_nvidia; then
+    echo "ERROR: libGLX_nvidia.so not found"
     exit 1
-}
+fi
+echo "✓ libGLX_nvidia found"
 echo
 
 # --------------------------------------------------
 # 5. Register NVIDIA Vulkan ICD
 # --------------------------------------------------
-echo "[Step] Installing NVIDIA Vulkan ICD..."
+echo "[Step] Registering NVIDIA Vulkan ICD..."
+
 sudo mkdir -p /usr/share/vulkan/icd.d
 
 sudo tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null <<'EOF'
@@ -97,10 +119,11 @@ sudo tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null <<'EOF'
 EOF
 
 sudo ldconfig
+echo "✓ Vulkan ICD registered"
 echo
 
 # --------------------------------------------------
-# 6. Verification: Vulkan must see NVIDIA GPU
+# 6. Verification
 # --------------------------------------------------
 echo "=================================================="
 echo "[Verification]"
@@ -108,19 +131,19 @@ echo "=================================================="
 
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
 
-echo "[Check] Vulkan device:"
-vulkaninfo | egrep -i 'deviceName|driverName|vendorID|GPU id' | head -n 20
-
+echo "[Check] nvidia-smi:"
+nvidia-smi
 echo
-echo "[Check] Vulkan GPU list:"
-vulkaninfo | grep "GPU id"
 
+echo "[Check] Vulkan devices:"
+vulkaninfo | egrep -i 'deviceName|driverName|vendorID|GPU id' | head -n 30
 echo
+
 echo "[Check] Vulkan entrypoint:"
 nm -D /usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.0 | grep vk_icdGetInstanceProcAddr
-
 echo
+
 echo "=================================================="
 echo "Step 3 completed successfully."
-echo "If NVIDIA RTX GPU appears above, Vulkan is READY."
+echo "NVIDIA driver + Vulkan are READY for Isaac Sim."
 echo "=================================================="
