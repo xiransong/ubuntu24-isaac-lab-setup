@@ -1,6 +1,6 @@
 # Isaac Sim + Isaac Lab Reproducible Setup (Lambda Cloud - Ubuntu 24.04.2 LTS)
 
-This repository provides a **fully reproducible, step-by-step setup** for installing **NVIDIA Isaac Sim 5.1** and **Isaac Lab** on a **Lambda Cloud GPU virtual machine**, using **Ubuntu 24.04.2** and **Python 3.11**.
+This repository provides a **fully reproducible, step-by-step setup** for installing **NVIDIA Isaac Sim 5.1** and **Isaac Lab** on a **[Lambda Cloud](https://lambda.ai/) GPU virtual machine**, using **Ubuntu 24.04.2** and **Python 3.11**.
 
 The setup has been tested end-to-end, including **headless reinforcement learning training**, and is suitable for research in **robotics, reinforcement learning, and embodied AI**.
 
