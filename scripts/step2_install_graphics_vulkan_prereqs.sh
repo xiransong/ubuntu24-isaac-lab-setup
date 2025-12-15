@@ -87,6 +87,6 @@ ldconfig -p | grep libXt.so.6 || true
 
 echo
 echo "=================================================="
-echo "Step 2 completed."
+echo "Step 2 completed successfully!!!!!"
 echo "System graphics + Vulkan prerequisites are installed."
 echo "=================================================="

@@ -73,6 +73,6 @@ which python3.11
 
 echo
 echo "=================================================="
-echo "Step 1 completed successfully!"
+echo "Step 1 completed successfully!!!!!"
 echo "Python 3.11 is now available as 'python3.11'."
 echo "=================================================="

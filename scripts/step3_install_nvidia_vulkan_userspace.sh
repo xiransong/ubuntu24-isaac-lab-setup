@@ -144,6 +144,6 @@ nm -D /usr/lib/x86_64-linux-gnu/libGLX_nvidia.so.0 | grep vk_icdGetInstanceProcA
 echo
 
 echo "=================================================="
-echo "Step 3 completed successfully."
+echo "Step 3 completed successfully!!!!!"
 echo "NVIDIA driver + Vulkan are READY for Isaac Sim."
 echo "=================================================="

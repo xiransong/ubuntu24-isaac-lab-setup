@@ -175,7 +175,7 @@ You should see your NVIDIA GPU listed in both outputs.
 
 ```bash
 bash step4_install_isaac_sim.sh
-```
+````
 
 This step:
 
@@ -197,13 +197,31 @@ isaacsim --no-window
 ```
 
 * When prompted, enter **`Yes`** to accept the EULA
-* After initialization, you should see:
+* During startup, you may see a message similar to:
+
+```text
+[Error] [isaacsim.ros2.bridge.impl.extension] ROS2 Bridge startup failed
+```
+
+**This message is expected and can be safely ignored** if you are not using ROS 2.
+
+Isaac Sim includes an optional **ROS 2 Bridge extension**, which attempts to initialize automatically.
+On systems where ROS 2 is not installed or configured, the extension logs a startup failure, but this **does not affect**:
+
+* core Isaac Sim functionality
+* headless operation
+* Isaac Lab reinforcement learning
+* GPU simulation or rendering
+
+After initialization completes, you should see:
 
 ```text
 Isaac Sim Full App is loaded.
 ```
 
-You can safely terminate with `Ctrl+C`.
+You can safely terminate the process with `Ctrl+C`.
+
+> ℹ️ If you plan to use ROS 2 integration in the future, you can install and configure ROS 2 separately and re-enable the bridge. For Isaac Lab RL workloads, no action is required.
 
 ---
 

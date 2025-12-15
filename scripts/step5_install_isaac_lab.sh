@@ -81,6 +81,6 @@ echo "[Check] Isaac Lab CLI:"
 echo
 
 echo "=================================================="
-echo "Step 5 completed successfully."
+echo "Step 5 completed successfully!!!!!"
 echo "Isaac Lab is installed and ready."
 echo "=================================================="

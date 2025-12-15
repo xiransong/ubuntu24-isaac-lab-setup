@@ -79,6 +79,6 @@ EOF
 
 echo
 echo "=================================================="
-echo "Step 4 completed successfully."
+echo "Step 4 completed successfully!!!!!"
 echo "Isaac Sim ${ISAACSIM_VERSION} is installed in the Python environment."
 echo "=================================================="
