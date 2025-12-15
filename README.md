@@ -237,6 +237,35 @@ This step:
 * Installs system build dependencies
 * Installs Isaac Lab Python dependencies
 
+During installation, you may see a warning similar to:
+
+```text
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed.
+The following dependency conflicts were detected:
+fastapi 0.115.7 requires starlette<0.46.0,>=0.40.0, but you have starlette 0.49.1 which is incompatible.
+```
+
+**This warning is expected and can be safely ignored for Isaac Lab reinforcement learning workflows.**
+
+Explanation:
+
+* Isaac Lab depends on a large, NVIDIA-curated software stack that pins specific versions of many packages.
+* Some optional web-related packages (e.g., `fastapi`, `starlette`) are included indirectly but are **not used** in core Isaac Lab RL training.
+* `pip` reports this as a dependency conflict, but it does **not affect**:
+
+  * simulation
+  * reinforcement learning
+  * headless execution
+  * GPU performance
+
+As long as Isaac Lab installs successfully and the verification below runs, **no action is required**.
+
+> ℹ️ On some systems, this warning may appear on the first run of `step5_install_isaac_lab.sh` but disappear on
+> subsequent runs. This indicates that the Python environment has stabilized.
+> No action is required if the verification task succeeds.
+
+---
+
 #### ✅ Verification: Run a Headless RL Task
 
 Activate the environment:
