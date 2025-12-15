@@ -4,6 +4,8 @@ This repository provides a **fully reproducible, step-by-step setup** for instal
 
 The setup has been tested end-to-end, including **headless reinforcement learning training**, and is suitable for research in **robotics, reinforcement learning, and embodied AI**.
 
+> **Current release:** v1.0.0
+
 ---
 
 ## 1. Goal and Base Environment
